@@ -128,7 +128,7 @@ export async function upsertProject(project: Project): Promise<boolean> {
     const row = mapProjectToRow(project);
     const { error } = await supabase
       .from("projects")
-      .upsert(row);
+      .upsert(row, { onConflict: 'slug' });
 
     if (error) throw error;
     return true;
