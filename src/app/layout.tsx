@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
+import { getChatWidgetCode } from "@/lib/supabase";
 
 export const metadata: Metadata = {
   title: "Mendez — Portfolio",
@@ -15,17 +16,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const chatWidgetCode = await getChatWidgetCode();
+
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
         <div className="scanline" />
         <Header />
         <main>{children}</main>
+        {chatWidgetCode && (
+          <div dangerouslySetInnerHTML={{ __html: chatWidgetCode }} />
+        )}
       </body>
     </html>
   );

@@ -189,16 +189,16 @@ export async function getAboutStory(): Promise<string> {
   }
   try {
     const { data, error } = await supabase
-      .from("settings")
-      .select("value")
-      .eq("key", "about_story")
+      .from("site_settings")
+      .select("about_text")
+      .eq("id", "singleton")
       .single();
       
     if (error) {
-      if (error.code === "PGRST116") return DEFAULT_ABOUT_STORY; // Key doesn't exist yet
+      if (error.code === "PGRST116") return DEFAULT_ABOUT_STORY;
       throw error;
     }
-    return data ? data.value : DEFAULT_ABOUT_STORY;
+    return data && data.about_text ? data.about_text : DEFAULT_ABOUT_STORY;
   } catch (err) {
     console.warn("Could not load about story from settings table. Falling back to default:", err);
     if (typeof window !== "undefined") {
@@ -217,8 +217,9 @@ export async function saveAboutStory(story: string): Promise<boolean> {
   }
   try {
     const { error } = await supabase
-      .from("settings")
-      .upsert({ key: "about_story", value: story, updated_at: new Date() });
+      .from("site_settings")
+      .update({ about_text: story, updated_at: new Date().toISOString() })
+      .eq("id", "singleton");
       
     if (error) throw error;
     return true;
@@ -241,9 +242,9 @@ export async function getAvatarUrl(): Promise<string | null> {
   }
   try {
     const { data, error } = await supabase
-      .from("settings")
-      .select("value")
-      .eq("key", "avatar_url")
+      .from("site_settings")
+      .select("avatar_url")
+      .eq("id", "singleton")
       .single();
       
     if (error) {
@@ -252,7 +253,7 @@ export async function getAvatarUrl(): Promise<string | null> {
       }
       return null;
     }
-    return data ? data.value : null;
+    return data ? data.avatar_url : null;
   } catch (err) {
     console.warn("Failed to retrieve avatar_url setting, falling back to local:", err);
     if (typeof window !== "undefined") {
@@ -279,8 +280,8 @@ export async function uploadAvatarFile(file: File): Promise<string> {
     const fileExt = file.name.split('.').pop() || 'jpg';
     const fileName = `avatar-${Date.now()}.${fileExt}`;
     
-    // Upload image file to 'avatars' bucket
-    const { error: uploadError } = await supabase.storage
+    // Step 1: Upload file to Storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
       .from("avatars")
       .upload(fileName, file, {
         cacheControl: '3600',
@@ -289,15 +290,18 @@ export async function uploadAvatarFile(file: File): Promise<string> {
       
     if (uploadError) throw uploadError;
     
-    // Fetch public access URL
-    const { data: { publicUrl } } = supabase.storage
+    // Step 2: Get the public URL
+    const { data: urlData } = supabase.storage
       .from("avatars")
-      .getPublicUrl(fileName);
+      .getPublicUrl(uploadData.path);
       
-    // Save to settings table
+    const publicUrl = urlData.publicUrl;
+      
+    // Step 3: Save the public URL to site_settings
     const { error: settingsError } = await supabase
-      .from("settings")
-      .upsert({ key: "avatar_url", value: publicUrl, updated_at: new Date() });
+      .from("site_settings")
+      .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
+      .eq("id", "singleton");
       
     if (settingsError) throw settingsError;
       
@@ -315,3 +319,59 @@ export async function uploadAvatarFile(file: File): Promise<string> {
     });
   }
 }
+
+export async function getChatWidgetCode(): Promise<string | null> {
+  if (!isSupabaseConfigured || !supabase || isMockMode()) {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("mendez_chat_widget");
+    }
+    return null;
+  }
+  try {
+    const { data, error } = await supabase
+      .from("site_settings")
+      .select("chat_widget_code")
+      .eq("id", "singleton")
+      .single();
+      
+    if (error) {
+      if (error.code === "PGRST116") return null;
+      throw error;
+    }
+    return data ? data.chat_widget_code : null;
+  } catch (err) {
+    console.warn("Failed to retrieve chat_widget_code:", err);
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("mendez_chat_widget");
+    }
+    return null;
+  }
+}
+
+export async function saveChatWidgetCode(code: string | null): Promise<boolean> {
+  if (!isSupabaseConfigured || !supabase || isMockMode()) {
+    if (typeof window !== "undefined") {
+      if (code === null) localStorage.removeItem("mendez_chat_widget");
+      else localStorage.setItem("mendez_chat_widget", code);
+    }
+    return true;
+  }
+  try {
+    const { error } = await supabase
+      .from("site_settings")
+      .update({ chat_widget_code: code, updated_at: new Date().toISOString() })
+      .eq("id", "singleton");
+      
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    console.error("Failed to save chat_widget_code:", err);
+    if (typeof window !== "undefined") {
+      if (code === null) localStorage.removeItem("mendez_chat_widget");
+      else localStorage.setItem("mendez_chat_widget", code);
+      return true;
+    }
+    throw err;
+  }
+}
+

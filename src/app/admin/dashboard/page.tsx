@@ -13,6 +13,8 @@ import {
   saveAboutStory,
   getAvatarUrl,
   uploadAvatarFile,
+  getChatWidgetCode,
+  saveChatWidgetCode,
 } from "@/lib/supabase";
 import { Project, Phase, Contract } from "@/lib/projectsData";
 
@@ -28,6 +30,11 @@ export default function AdminDashboard() {
   const [aboutLoading, setAboutLoading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
+
+  // Chat Widget state
+  const [chatWidgetCode, setChatWidgetCode] = useState("");
+  const [chatWidgetLoading, setChatWidgetLoading] = useState(false);
+  const [chatWidgetActive, setChatWidgetActive] = useState(false);
 
   // Form State
   const [isEditing, setIsEditing] = useState(false);
@@ -84,6 +91,10 @@ export default function AdminDashboard() {
 
       const avatar = await getAvatarUrl();
       setAvatarUrl(avatar);
+
+      const chatWidget = await getChatWidgetCode();
+      setChatWidgetCode(chatWidget || "");
+      setChatWidgetActive(!!chatWidget);
     } catch (err) {
       console.error(err);
     } finally {
@@ -282,6 +293,42 @@ export default function AdminDashboard() {
     }
   };
 
+  // Handle Save Chat Widget
+  const handleSaveChatWidget = async () => {
+    setMessage("");
+    setError("");
+    setChatWidgetLoading(true);
+    try {
+      const codeToSave = chatWidgetCode.trim() || null;
+      await saveChatWidgetCode(codeToSave);
+      setChatWidgetActive(!!codeToSave);
+      setMessage(codeToSave ? "Chat widget updated successfully." : "Chat widget removed.");
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Failed to save chat widget.";
+      setError(errMsg);
+    } finally {
+      setChatWidgetLoading(false);
+    }
+  };
+
+  // Handle Clear Chat Widget
+  const handleClearChatWidget = async () => {
+    setChatWidgetCode("");
+    setMessage("");
+    setError("");
+    setChatWidgetLoading(true);
+    try {
+      await saveChatWidgetCode(null);
+      setChatWidgetActive(false);
+      setMessage("Chat widget removed.");
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Failed to remove chat widget.";
+      setError(errMsg);
+    } finally {
+      setChatWidgetLoading(false);
+    }
+  };
+
   if (!authChecked) {
     return (
       <div className="container" style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
@@ -390,6 +437,51 @@ export default function AdminDashboard() {
             >
               {aboutLoading ? "Saving story..." : "Save bio text"}
             </button>
+          </div>
+
+          {/* Chat Widget Section */}
+          <div style={{ background: "var(--surface)", border: "1px solid var(--border-rest)", borderRadius: "20px", padding: "2rem" }}>
+            <span className="small-label">Integration Settings</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.5rem", marginBottom: "1.5rem" }}>
+              <h3 className="title-sm" style={{ fontSize: "1.2rem", margin: 0 }}>Chat Widget Embed Code</h3>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: chatWidgetActive ? "var(--color-success)" : "rgba(255, 255, 255, 0.2)" }} />
+                <span className="small-label" style={{ fontSize: "0.8rem", color: chatWidgetActive ? "var(--text-primary)" : "var(--text-secondary)" }}>
+                  {chatWidgetActive ? "Widget active" : "No widget set"}
+                </span>
+              </div>
+            </div>
+            
+            <div className="form-group">
+              <textarea
+                className="form-input"
+                rows={5}
+                style={{ resize: "vertical", fontSize: "0.9rem", lineHeight: "1.6", borderRadius: "12px", fontFamily: "monospace" }}
+                placeholder="Paste your Crisp, Tawk.to, or any chat widget embed code here..."
+                value={chatWidgetCode}
+                onChange={(e) => setChatWidgetCode(e.target.value)}
+                disabled={chatWidgetLoading}
+              />
+            </div>
+            
+            <div style={{ display: "flex", gap: "1rem" }}>
+              <button
+                onClick={handleSaveChatWidget}
+                className="btn-primary"
+                style={{ fontSize: "0.85rem", padding: "0.6rem 1.2rem" }}
+                disabled={chatWidgetLoading}
+              >
+                {chatWidgetLoading ? "Saving..." : "Save widget"}
+              </button>
+              <button
+                onClick={handleClearChatWidget}
+                className="btn-secondary"
+                style={{ fontSize: "0.85rem", padding: "0.6rem 1.2rem", color: "var(--color-error)", borderColor: "rgba(239, 68, 68, 0.2)" }}
+                disabled={chatWidgetLoading || !chatWidgetActive}
+              >
+                Clear widget
+              </button>
+            </div>
           </div>
 
           {/* Managed Projects List */}
