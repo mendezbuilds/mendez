@@ -13,23 +13,41 @@ export default function ContactForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Construct the mailto link
-    const mailtoLink = `mailto:capmendez078@gmail.com?subject=${encodeURIComponent(
-      subject || "New Inquiry from Portfolio"
-    )}&body=${encodeURIComponent(
-      `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
-    )}`;
-    
-    // Open the default email client
-    window.location.href = mailtoLink;
+    setStatus("idle");
 
-    setLoading(false);
-    setStatus("success");
-    setName("");
-    setEmail("");
-    setSubject("");
-    setMessage("");
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: "56ae7d9f-577e-4109-9f2a-41b5712b59b0",
+          name: name,
+          email: email,
+          subject: subject || "New Inquiry from Portfolio",
+          message: message,
+        }),
+      });
+
+      const result = await response.json();
+      if (response.status === 200) {
+        setStatus("success");
+        setName("");
+        setEmail("");
+        setSubject("");
+        setMessage("");
+      } else {
+        console.error("Form submission error:", result);
+        setStatus("error");
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+      setStatus("error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,6 +61,17 @@ export default function ContactForm() {
           </p>
           <button onClick={() => setStatus("idle")} className="btn-secondary" style={{ marginTop: "1.5rem", fontSize: "0.85rem", padding: "0.5rem 1.2rem" }}>
             Send another message
+          </button>
+        </div>
+      ) : status === "error" ? (
+        <div style={{ background: "rgba(239, 68, 68, 0.05)", border: "1px solid rgba(239, 68, 68, 0.15)", borderRadius: "20px", padding: "3rem 2rem", textAlign: "center" }}>
+          <span style={{ fontSize: "2.5rem", color: "var(--color-error)" }}>!</span>
+          <h3 className="title-sm" style={{ marginTop: "1rem", fontSize: "1.25rem", color: "var(--text-primary)" }}>Transmission Failed</h3>
+          <p className="body-text" style={{ fontSize: "0.95rem", marginTop: "0.5rem" }}>
+            There was an issue sending your message. Please try again or reach out directly.
+          </p>
+          <button onClick={() => setStatus("idle")} className="btn-secondary" style={{ marginTop: "1.5rem", fontSize: "0.85rem", padding: "0.5rem 1.2rem" }}>
+            Try again
           </button>
         </div>
       ) : (
