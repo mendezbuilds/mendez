@@ -17,6 +17,8 @@ import {
   saveChatWidgetCode,
   uploadThumbnailFile,
   uploadVideoFile,
+  getSocialLinks,
+  saveSocialLinks,
 } from "@/lib/supabase";
 import { Project, Phase, Contract } from "@/lib/projectsData";
 
@@ -37,6 +39,13 @@ export default function AdminDashboard() {
   const [chatWidgetCode, setChatWidgetCode] = useState("");
   const [chatWidgetLoading, setChatWidgetLoading] = useState(false);
   const [chatWidgetActive, setChatWidgetActive] = useState(false);
+
+  // Social Links state
+  const [socialGithub, setSocialGithub] = useState("");
+  const [socialTwitter, setSocialTwitter] = useState("");
+  const [socialLinkedin, setSocialLinkedin] = useState("");
+  const [socialEmail, setSocialEmail] = useState("");
+  const [socialLoading, setSocialLoading] = useState(false);
 
   // Form State
   const [isEditing, setIsEditing] = useState(false);
@@ -100,6 +109,12 @@ export default function AdminDashboard() {
       const chatWidget = await getChatWidgetCode();
       setChatWidgetCode(chatWidget || "");
       setChatWidgetActive(!!chatWidget);
+
+      const socials = await getSocialLinks();
+      setSocialGithub(socials.githubUrl);
+      setSocialTwitter(socials.twitterUrl);
+      setSocialLinkedin(socials.linkedinUrl);
+      setSocialEmail(socials.emailUrl);
     } catch (err) {
       console.error(err);
     } finally {
@@ -112,6 +127,25 @@ export default function AdminDashboard() {
     if (!authChecked) return;
     fetchData();
   }, [authChecked]);
+
+  const handleSaveSocials = async () => {
+    try {
+      setSocialLoading(true);
+      await saveSocialLinks({
+        githubUrl: socialGithub,
+        twitterUrl: socialTwitter,
+        linkedinUrl: socialLinkedin,
+        emailUrl: socialEmail,
+      });
+      setMessage("Social links updated.");
+      setTimeout(() => setMessage(""), 3000);
+    } catch (err) {
+      setError("Failed to save social links.");
+      setTimeout(() => setError(""), 3000);
+    } finally {
+      setSocialLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
     if (isSupabaseConfigured && supabase) {
@@ -531,6 +565,69 @@ export default function AdminDashboard() {
                 Clear widget
               </button>
             </div>
+          </div>
+
+          {/* Social Links Section */}
+          <div style={{ background: "var(--surface)", border: "1px solid var(--border-rest)", borderRadius: "20px", padding: "2rem" }}>
+            <span className="small-label">Social Connections</span>
+            <h3 className="title-sm" style={{ fontSize: "1.2rem", marginTop: "0.5rem", marginBottom: "1.5rem" }}>Social Profile URLs</h3>
+            
+            <div className="form-group">
+              <label className="form-label" style={{ fontSize: "0.85rem" }}>GitHub URL</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="https://github.com/..."
+                value={socialGithub}
+                onChange={(e) => setSocialGithub(e.target.value)}
+                disabled={socialLoading}
+              />
+            </div>
+            
+            <div className="form-group">
+              <label className="form-label" style={{ fontSize: "0.85rem" }}>Twitter/X URL</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="https://x.com/..."
+                value={socialTwitter}
+                onChange={(e) => setSocialTwitter(e.target.value)}
+                disabled={socialLoading}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" style={{ fontSize: "0.85rem" }}>LinkedIn URL</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="https://linkedin.com/in/..."
+                value={socialLinkedin}
+                onChange={(e) => setSocialLinkedin(e.target.value)}
+                disabled={socialLoading}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" style={{ fontSize: "0.85rem" }}>Email (mailto:)</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="mailto:..."
+                value={socialEmail}
+                onChange={(e) => setSocialEmail(e.target.value)}
+                disabled={socialLoading}
+              />
+            </div>
+            
+            <button
+              onClick={handleSaveSocials}
+              className="btn-primary"
+              style={{ fontSize: "0.85rem", padding: "0.6rem 1.2rem", marginTop: "0.5rem" }}
+              disabled={socialLoading}
+            >
+              {socialLoading ? "Saving links..." : "Save social links"}
+            </button>
           </div>
 
           {/* Managed Projects List */}

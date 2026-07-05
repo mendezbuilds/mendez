@@ -20,7 +20,20 @@
 --   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 -- );
 
--- 2. Settings table for editable About bio copy
+-- 2. Settings table for editable About bio copy, avatars, and social links
+create table if not exists site_settings (
+  id text primary key,
+  about_text text,
+  avatar_url text,
+  chat_widget_code text,
+  github_url text,
+  twitter_url text,
+  linkedin_url text,
+  email_url text,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Legacy Settings Table (for reference)
 create table if not exists settings (
   key text primary key,
   value text not null,

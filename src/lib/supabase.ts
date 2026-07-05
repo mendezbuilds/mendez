@@ -374,6 +374,87 @@ export async function uploadVideoFile(file: File): Promise<string> {
   }
 }
 
+export interface SocialLinks {
+  githubUrl: string;
+  twitterUrl: string;
+  linkedinUrl: string;
+  emailUrl: string;
+}
+
+const DEFAULT_SOCIAL_LINKS: SocialLinks = {
+  githubUrl: "https://github.com/mendezbuilds",
+  twitterUrl: "https://x.com/mendezbuilds",
+  linkedinUrl: "https://linkedin.com/in/alex-mendez",
+  emailUrl: "mailto:mendez@builtbymendez.com",
+};
+
+export async function getSocialLinks(): Promise<SocialLinks> {
+  if (!isSupabaseConfigured || !supabase || isMockMode()) {
+    if (typeof window !== "undefined") {
+      const cached = localStorage.getItem("mendez_social_links");
+      if (cached) return JSON.parse(cached);
+    }
+    return DEFAULT_SOCIAL_LINKS;
+  }
+  try {
+    const { data, error } = await supabase
+      .from("site_settings")
+      .select("github_url, twitter_url, linkedin_url, email_url")
+      .eq("id", "singleton")
+      .single();
+      
+    if (error) {
+      if (error.code === "PGRST116") return DEFAULT_SOCIAL_LINKS;
+      throw error;
+    }
+    
+    return {
+      githubUrl: data.github_url || "",
+      twitterUrl: data.twitter_url || "",
+      linkedinUrl: data.linkedin_url || "",
+      emailUrl: data.email_url || ""
+    };
+  } catch (err) {
+    console.warn("Could not load social links. Falling back:", err);
+    if (typeof window !== "undefined") {
+      const cached = localStorage.getItem("mendez_social_links");
+      if (cached) return JSON.parse(cached);
+    }
+    return DEFAULT_SOCIAL_LINKS;
+  }
+}
+
+export async function saveSocialLinks(links: SocialLinks): Promise<boolean> {
+  if (!isSupabaseConfigured || !supabase || isMockMode()) {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("mendez_social_links", JSON.stringify(links));
+    }
+    return true;
+  }
+  try {
+    const { error } = await supabase
+      .from("site_settings")
+      .update({ 
+        github_url: links.githubUrl,
+        twitter_url: links.twitterUrl,
+        linkedin_url: links.linkedinUrl,
+        email_url: links.emailUrl,
+        updated_at: new Date().toISOString() 
+      })
+      .eq("id", "singleton");
+      
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    console.error("Failed to save social links:", err);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("mendez_social_links", JSON.stringify(links));
+      return true;
+    }
+    throw err;
+  }
+}
+
 export async function getChatWidgetCode(): Promise<string | null> {
   if (!isSupabaseConfigured || !supabase || isMockMode()) {
     if (typeof window !== "undefined") {
