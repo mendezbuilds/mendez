@@ -320,6 +320,60 @@ export async function uploadAvatarFile(file: File): Promise<string> {
   }
 }
 
+export async function uploadThumbnailFile(file: File): Promise<string> {
+  if (!isSupabaseConfigured || !supabase || isMockMode()) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  try {
+    const fileExt = file.name.split('.').pop() || 'jpg';
+    const fileName = `thumb-${Date.now()}.${fileExt}`;
+    
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from("images")
+      .upload(fileName, file, { cacheControl: '3600', upsert: true });
+      
+    if (uploadError) throw uploadError;
+    
+    const { data: urlData } = supabase.storage.from("images").getPublicUrl(uploadData.path);
+    return urlData.publicUrl;
+  } catch (err) {
+    console.warn("Failed to upload thumbnail to live Supabase storage:", err);
+    throw err;
+  }
+}
+
+export async function uploadVideoFile(file: File): Promise<string> {
+  if (!isSupabaseConfigured || !supabase || isMockMode()) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  try {
+    const fileExt = file.name.split('.').pop() || 'mp4';
+    const fileName = `video-${Date.now()}.${fileExt}`;
+    
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from("videos")
+      .upload(fileName, file, { cacheControl: '3600', upsert: true });
+      
+    if (uploadError) throw uploadError;
+    
+    const { data: urlData } = supabase.storage.from("videos").getPublicUrl(uploadData.path);
+    return urlData.publicUrl;
+  } catch (err) {
+    console.warn("Failed to upload video to live Supabase storage:", err);
+    throw err;
+  }
+}
+
 export async function getChatWidgetCode(): Promise<string | null> {
   if (!isSupabaseConfigured || !supabase || isMockMode()) {
     if (typeof window !== "undefined") {

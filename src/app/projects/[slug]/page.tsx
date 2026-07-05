@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getProjectBySlug } from "@/lib/supabase";
 import Footer from "@/components/Footer";
@@ -67,12 +68,28 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                 <div style={{ background: "#050505", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden", aspectRatio: "16/10" }}>
                   <video
                     src={project.videoUrl}
+                    poster={project.thumbnailUrl || undefined}
                     controls
                     autoPlay
                     loop
                     muted
                     playsInline
                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Thumbnail Fallback */}
+            {!project.videoUrl && project.thumbnailUrl && (
+              <div style={{ marginBottom: "3rem" }}>
+                <h3 className="detail-section-title">Project Thumbnail</h3>
+                <div style={{ background: "#050505", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden", aspectRatio: "16/10", position: "relative" }}>
+                  <Image
+                    src={project.thumbnailUrl}
+                    alt={project.title}
+                    fill
+                    style={{ objectFit: "cover" }}
                   />
                 </div>
               </div>

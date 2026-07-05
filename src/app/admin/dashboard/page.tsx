@@ -15,6 +15,8 @@ import {
   uploadAvatarFile,
   getChatWidgetCode,
   saveChatWidgetCode,
+  uploadThumbnailFile,
+  uploadVideoFile,
 } from "@/lib/supabase";
 import { Project, Phase, Contract } from "@/lib/projectsData";
 
@@ -50,6 +52,9 @@ export default function AdminDashboard() {
   const [formGithubUrl, setFormGithubUrl] = useState("");
   const [formLiveUrl, setFormLiveUrl] = useState("");
   const [formThumbnailUrl, setFormThumbnailUrl] = useState("");
+  
+  const [thumbnailUploading, setThumbnailUploading] = useState(false);
+  const [videoUploading, setVideoUploading] = useState(false);
 
   // Sub-items Form State
   const [formPhases, setFormPhases] = useState<Phase[]>([]);
@@ -326,6 +331,50 @@ export default function AdminDashboard() {
       setError(errMsg);
     } finally {
       setChatWidgetLoading(false);
+    }
+  };
+
+  // Handle Thumbnail Upload
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setMessage("");
+    setError("");
+    setThumbnailUploading(true);
+
+    try {
+      const file = files[0];
+      const uploadedUrl = await uploadThumbnailFile(file);
+      setFormThumbnailUrl(uploadedUrl);
+      setMessage("Thumbnail image uploaded successfully.");
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Failed to upload thumbnail.";
+      setError(errMsg);
+    } finally {
+      setThumbnailUploading(false);
+    }
+  };
+
+  // Handle Video Upload
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setMessage("");
+    setError("");
+    setVideoUploading(true);
+
+    try {
+      const file = files[0];
+      const uploadedUrl = await uploadVideoFile(file);
+      setFormVideoUrl(uploadedUrl);
+      setMessage("Demo video uploaded successfully.");
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Failed to upload video.";
+      setError(errMsg);
+    } finally {
+      setVideoUploading(false);
     }
   };
 
@@ -643,15 +692,32 @@ export default function AdminDashboard() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Demo Video Link (.mp4 URL)</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="e.g. /videos/gatewrx.mp4"
-                value={formVideoUrl}
-                onChange={(e) => setFormVideoUrl(e.target.value)}
-                disabled={submitLoading}
-              />
+              <label className="form-label">Demo Video (.mp4 / .webm)</label>
+              <div style={{ display: "flex", gap: "1rem", alignItems: "center", marginTop: "0.5rem" }}>
+                <input
+                  type="file"
+                  accept="video/mp4,video/webm"
+                  onChange={handleVideoUpload}
+                  disabled={submitLoading || videoUploading}
+                  style={{ display: "none" }}
+                  id="video-upload-input"
+                />
+                <label
+                  htmlFor="video-upload-input"
+                  className="btn-secondary"
+                  style={{ cursor: "pointer", fontSize: "0.85rem", padding: "0.5rem 1rem" }}
+                >
+                  {videoUploading ? "Uploading..." : "Select Video File"}
+                </label>
+                {formVideoUrl ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <span style={{ fontSize: "0.85rem", color: "var(--color-success)" }}>✓ Uploaded</span>
+                    <a href={formVideoUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textDecoration: "underline" }}>View File</a>
+                  </div>
+                ) : (
+                  <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>No video selected</span>
+                )}
+              </div>
             </div>
 
             <div className="form-group">
@@ -679,15 +745,31 @@ export default function AdminDashboard() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Card Thumbnail Image Path</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="e.g. /images/gatewrx-thumb.jpg"
-                value={formThumbnailUrl}
-                onChange={(e) => setFormThumbnailUrl(e.target.value)}
-                disabled={submitLoading}
-              />
+              <label className="form-label">Card Thumbnail Image</label>
+              <div style={{ display: "flex", gap: "1rem", alignItems: "center", marginTop: "0.5rem" }}>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleThumbnailUpload}
+                  disabled={submitLoading || thumbnailUploading}
+                  style={{ display: "none" }}
+                  id="thumbnail-upload-input"
+                />
+                <div style={{ width: "80px", height: "60px", background: "var(--surface-sunken)", border: "1px solid var(--border-rest)", borderRadius: "8px", overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                  {formThumbnailUrl ? (
+                    <img src={formThumbnailUrl} alt="Thumbnail preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : (
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>None</span>
+                  )}
+                </div>
+                <label
+                  htmlFor="thumbnail-upload-input"
+                  className="btn-secondary"
+                  style={{ cursor: "pointer", fontSize: "0.85rem", padding: "0.5rem 1rem" }}
+                >
+                  {thumbnailUploading ? "Uploading..." : formThumbnailUrl ? "Replace Image" : "Upload Image"}
+                </label>
+              </div>
             </div>
 
             {/* Development Phases Section */}

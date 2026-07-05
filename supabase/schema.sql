@@ -41,3 +41,49 @@ create policy "Allow full control to settings for authenticated users"
   to authenticated
   using (true)
   with check (true);
+
+-- 3. Storage Bucket Setup & RLS Policies
+-- NOTE: Please ensure the 'images' and 'videos' buckets are created and set to "Public" in the Supabase Dashboard,
+-- or run the following snippet if using pg_graphql or similar setup.
+-- insert into storage.buckets (id, name, public) values ('images', 'images', true) on conflict do nothing;
+-- insert into storage.buckets (id, name, public) values ('videos', 'videos', true) on conflict do nothing;
+
+-- Images bucket policies
+create policy "Authenticated users can upload images"
+on storage.objects for insert
+to authenticated
+with check (bucket_id = 'images');
+
+create policy "Authenticated users can update images"
+on storage.objects for update
+to authenticated
+using (bucket_id = 'images');
+
+create policy "Public can read images"
+on storage.objects for select
+using (bucket_id = 'images');
+
+create policy "Authenticated users can delete images"
+on storage.objects for delete
+to authenticated
+using (bucket_id = 'images');
+
+-- Videos bucket policies
+create policy "Authenticated users can upload videos"
+on storage.objects for insert
+to authenticated
+with check (bucket_id = 'videos');
+
+create policy "Authenticated users can update videos"
+on storage.objects for update
+to authenticated
+using (bucket_id = 'videos');
+
+create policy "Public can read videos"
+on storage.objects for select
+using (bucket_id = 'videos');
+
+create policy "Authenticated users can delete videos"
+on storage.objects for delete
+to authenticated
+using (bucket_id = 'videos');

@@ -116,14 +116,23 @@ export default async function HomePage() {
             <ScrollReveal className="reveal-hidden" delay={100}>
               <SpotlightCard className="featured-project-card shimmer-wrapper">
                 <div className="featured-layout">
-                  <div className="featured-video-container">
+                  <div className="featured-video-container" style={{ position: "relative" }}>
                     {featuredProject.videoUrl ? (
                       <video
                         src={featuredProject.videoUrl}
+                        poster={featuredProject.thumbnailUrl || undefined}
                         autoPlay
                         loop
                         muted
                         playsInline
+                        className="project-card-video"
+                      />
+                    ) : featuredProject.thumbnailUrl ? (
+                      <Image
+                        src={featuredProject.thumbnailUrl}
+                        alt={featuredProject.title}
+                        fill
+                        style={{ objectFit: "cover" }}
                         className="project-card-video"
                       />
                     ) : (
@@ -196,6 +205,11 @@ export default async function HomePage() {
                   <ScrollReveal key={project.slug} delay={idx * 150} className="reveal-hidden">
                     <Link href={`/projects/${project.slug}`} style={{ display: "block", height: "100%" }}>
                       <SpotlightCard className="project-card shimmer-wrapper">
+                        {project.thumbnailUrl && (
+                          <div style={{ position: "relative", width: "100%", height: "160px", marginBottom: "1.5rem", borderRadius: "8px", overflow: "hidden" }}>
+                            <Image src={project.thumbnailUrl} alt={project.title} fill style={{ objectFit: "cover" }} />
+                          </div>
+                        )}
                         <div>
                           <div className="card-title-row" style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "space-between", flexWrap: "wrap" }}>
                             <div style={{ display: "flex", alignItems: "center" }}>
