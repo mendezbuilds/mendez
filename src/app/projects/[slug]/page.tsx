@@ -62,7 +62,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
             </div>
 
             {/* Video Demo */}
-            {project.videoUrl && (
+            {project.featured && project.videoUrl && (
               <div style={{ marginBottom: "3rem" }}>
                 <h3 className="detail-section-title">Product Demo</h3>
                 <div style={{ background: "#050505", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden", aspectRatio: "16/10" }}>
@@ -80,8 +80,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               </div>
             )}
 
-            {/* Thumbnail Fallback */}
-            {!project.videoUrl && project.thumbnailUrl && (
+            {/* Project Thumbnail */}
+            {!project.featured && project.thumbnailUrl && (
               <div style={{ marginBottom: "3rem" }}>
                 <h3 className="detail-section-title">Project Thumbnail</h3>
                 <div style={{ background: "#050505", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden", aspectRatio: "16/10", position: "relative" }}>

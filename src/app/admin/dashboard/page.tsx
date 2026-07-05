@@ -746,33 +746,35 @@ export default function AdminDashboard() {
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Card Thumbnail Image</label>
-              <div style={{ display: "flex", gap: "1rem", alignItems: "center", marginTop: "0.5rem" }}>
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={handleThumbnailUpload}
-                  disabled={submitLoading || thumbnailUploading}
-                  style={{ display: "none" }}
-                  id="thumbnail-upload-input"
-                />
-                <div style={{ width: "80px", height: "60px", background: "var(--surface-sunken)", border: "1px solid var(--border-rest)", borderRadius: "8px", overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                  {formThumbnailUrl ? (
-                    <img src={formThumbnailUrl} alt="Thumbnail preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  ) : (
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>None</span>
-                  )}
+            {!formFeatured && (
+              <div className="form-group">
+                <label className="form-label">Card Thumbnail Image</label>
+                <div style={{ display: "flex", gap: "1rem", alignItems: "center", marginTop: "0.5rem" }}>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleThumbnailUpload}
+                    disabled={submitLoading || thumbnailUploading}
+                    style={{ display: "none" }}
+                    id="thumbnail-upload-input"
+                  />
+                  <div style={{ width: "80px", height: "60px", background: "var(--surface-sunken)", border: "1px solid var(--border-rest)", borderRadius: "8px", overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    {formThumbnailUrl ? (
+                      <img src={formThumbnailUrl} alt="Thumbnail preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    ) : (
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>None</span>
+                    )}
+                  </div>
+                  <label
+                    htmlFor="thumbnail-upload-input"
+                    className="btn-secondary"
+                    style={{ cursor: "pointer", fontSize: "0.85rem", padding: "0.5rem 1rem" }}
+                  >
+                    {thumbnailUploading ? "Uploading..." : formThumbnailUrl ? "Replace Image" : "Upload Image"}
+                  </label>
                 </div>
-                <label
-                  htmlFor="thumbnail-upload-input"
-                  className="btn-secondary"
-                  style={{ cursor: "pointer", fontSize: "0.85rem", padding: "0.5rem 1rem" }}
-                >
-                  {thumbnailUploading ? "Uploading..." : formThumbnailUrl ? "Replace Image" : "Upload Image"}
-                </label>
               </div>
-            </div>
+            )}
 
             {/* Development Phases Section */}
             <div style={{ marginTop: "1.5rem", marginBottom: "1.5rem" }}>
