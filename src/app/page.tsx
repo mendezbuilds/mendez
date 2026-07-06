@@ -53,7 +53,7 @@ export default async function HomePage() {
         
         <div className="container hero-layout">
           <div className="hero-text-side">
-            <span className="small-label" style={{ marginBottom: "1rem" }}>
+            <span className="small-label" style={{ display: "block", marginBottom: "1rem" }}>
               Open to new projects
             </span>
             
@@ -91,8 +91,8 @@ export default async function HomePage() {
         <div className="container" style={{ maxWidth: "800px" }}>
           <ScrollReveal className="reveal-hidden">
             <div className="section-header">
-              <span className="small-label">About me</span>
-              <h2 className="title-md section-header-line" style={{ marginTop: "0.5rem" }}>
+              <span className="small-label" style={{ display: "block", marginBottom: "0.75rem" }}>About me</span>
+              <h2 className="title-md section-header-line" style={{ marginTop: 0 }}>
                 My background
               </h2>
             </div>
@@ -107,9 +107,8 @@ export default async function HomePage() {
         <div className="container">
           <ScrollReveal className="reveal-hidden">
             <div className="section-header" style={{ marginBottom: "3.5rem" }}>
-              <span className="small-label">Featured Work</span>
-              <h2 className="title-md section-header-line" style={{ marginTop: "0.5rem" }}>
-                Selected case study
+              <h2 className="title-md section-header-line" style={{ marginTop: 0 }}>
+                Selected Work
               </h2>
             </div>
           </ScrollReveal>
@@ -250,8 +249,8 @@ export default async function HomePage() {
         <div className="container">
           <ScrollReveal className="reveal-hidden">
             <div className="section-header" style={{ textAlign: "center", marginBottom: "4rem" }}>
-              <span className="small-label">What I work with</span>
-              <h2 className="title-md section-header-line" style={{ marginTop: "0.5rem" }}>
+              <span className="small-label" style={{ display: "block", marginBottom: "0.75rem" }}>What I work with</span>
+              <h2 className="title-md section-header-line" style={{ marginTop: 0 }}>
                 Technical stack
               </h2>
             </div>
@@ -311,8 +310,8 @@ export default async function HomePage() {
       <section className="contact-section-wrapper" id="contact">
         <div className="container section-padding contact-section">
           <ScrollReveal className="reveal-hidden">
-            <span className="small-label" style={{ fontWeight: 600, color: "var(--accent)" }}>Let's build something</span>
-            <h2 className="title-md" style={{ marginTop: "1rem", marginBottom: "1.5rem" }}>
+            <span className="small-label" style={{ display: "block", marginBottom: "0.75rem", fontWeight: 600, color: "var(--accent)" }}>Let's build something</span>
+            <h2 className="title-md" style={{ marginTop: 0, marginBottom: "1.5rem" }}>
               Working on something serious?
             </h2>
             <p className="body-text" style={{ maxWidth: "600px", margin: "0 auto 3rem" }}>

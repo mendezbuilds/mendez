@@ -426,10 +426,10 @@ export default function AdminDashboard() {
       {/* Header Info */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1.5rem", marginBottom: "3rem" }}>
         <div>
-          <span className="small-label" style={{ color: "var(--text-secondary)" }}>
+          <span className="small-label" style={{ display: "block", marginBottom: "0.75rem", color: "var(--text-secondary)" }}>
             {isSupabaseConfigured ? "Connected to Supabase" : "Using local mock database"}
           </span>
-          <h1 className="title-md" style={{ marginTop: "0.5rem" }}>Admin Dashboard</h1>
+          <h1 className="title-md" style={{ marginTop: 0 }}>Admin Dashboard</h1>
         </div>
         <div style={{ display: "flex", gap: "1rem" }}>
           <button className="btn-secondary" style={{ padding: "0.6rem 1.2rem", fontSize: "0.85rem" }} onClick={fetchData} disabled={loading}>
@@ -460,8 +460,8 @@ export default function AdminDashboard() {
           
           {/* Avatar Upload Panel */}
           <div style={{ background: "var(--surface)", border: "1px solid var(--border-rest)", borderRadius: "20px", padding: "2rem" }}>
-            <span className="small-label">Profile Configuration</span>
-            <h3 className="title-sm" style={{ fontSize: "1.2rem", marginTop: "0.5rem", marginBottom: "1.5rem" }}>Hero Avatar Photo</h3>
+            <span className="small-label" style={{ display: "block", marginBottom: "0.75rem" }}>Profile Configuration</span>
+            <h3 className="title-sm" style={{ fontSize: "1.2rem", marginTop: 0, marginBottom: "1.5rem" }}>Hero Avatar Photo</h3>
             
             <div style={{ display: "flex", alignItems: "center", gap: "2rem", flexWrap: "wrap" }}>
               <div className="avatar-wrapper" style={{ width: "90px", height: "90px", border: "1px solid var(--accent)", padding: "2px", borderRadius: "50%" }}>
@@ -497,8 +497,8 @@ export default function AdminDashboard() {
 
           {/* About Section Editor */}
           <div style={{ background: "var(--surface)", border: "1px solid var(--border-rest)", borderRadius: "20px", padding: "2rem" }}>
-            <span className="small-label">Bio Story Editor</span>
-            <h3 className="title-sm" style={{ fontSize: "1.2rem", marginTop: "0.5rem", marginBottom: "1.5rem" }}>About Narrative Copy</h3>
+            <span className="small-label" style={{ display: "block", marginBottom: "0.75rem" }}>Bio Story Editor</span>
+            <h3 className="title-sm" style={{ fontSize: "1.2rem", marginTop: 0, marginBottom: "1.5rem" }}>About Narrative Copy</h3>
             
             <div className="form-group">
               <textarea
@@ -524,8 +524,8 @@ export default function AdminDashboard() {
 
           {/* Chat Widget Section */}
           <div style={{ background: "var(--surface)", border: "1px solid var(--border-rest)", borderRadius: "20px", padding: "2rem" }}>
-            <span className="small-label">Integration Settings</span>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.5rem", marginBottom: "1.5rem" }}>
+            <span className="small-label" style={{ display: "block", marginBottom: "0.75rem" }}>Integration Settings</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 0, marginBottom: "1.5rem" }}>
               <h3 className="title-sm" style={{ fontSize: "1.2rem", margin: 0 }}>Chat Widget Embed Code</h3>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: chatWidgetActive ? "var(--color-success)" : "rgba(255, 255, 255, 0.2)" }} />
@@ -569,8 +569,8 @@ export default function AdminDashboard() {
 
           {/* Social Links Section */}
           <div style={{ background: "var(--surface)", border: "1px solid var(--border-rest)", borderRadius: "20px", padding: "2rem" }}>
-            <span className="small-label">Social Connections</span>
-            <h3 className="title-sm" style={{ fontSize: "1.2rem", marginTop: "0.5rem", marginBottom: "1.5rem" }}>Social Profile URLs</h3>
+            <span className="small-label" style={{ display: "block", marginBottom: "0.75rem" }}>Social Connections</span>
+            <h3 className="title-sm" style={{ fontSize: "1.2rem", marginTop: 0, marginBottom: "1.5rem" }}>Social Profile URLs</h3>
             
             <div className="form-group">
               <label className="form-label" style={{ fontSize: "0.85rem" }}>GitHub URL</label>
@@ -677,8 +677,8 @@ export default function AdminDashboard() {
 
         {/* Right Side: Create/Edit Project Form */}
         <div style={{ background: "var(--surface)", border: "1px solid var(--border-rest)", borderRadius: "20px", padding: "2.5rem" }}>
-          <span className="small-label">Project Configuration</span>
-          <h3 className="title-sm" style={{ fontSize: "1.2rem", marginTop: "0.5rem", marginBottom: "2rem" }}>
+          <span className="small-label" style={{ display: "block", marginBottom: "0.75rem" }}>Project Configuration</span>
+          <h3 className="title-sm" style={{ fontSize: "1.2rem", marginTop: 0, marginBottom: "2rem" }}>
             {isEditing ? `Edit: ${formTitle}` : "Register New Project"}
           </h3>
 

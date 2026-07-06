@@ -31,10 +31,10 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
         {/* Project Header */}
         <div style={{ marginBottom: "3rem" }}>
-          <span className="small-label" style={{ fontSize: "0.9rem" }}>
+          <span className="small-label" style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.9rem" }}>
             Case Study
           </span>
-          <h1 className="title-md" style={{ marginTop: "0.5rem" }}>
+          <h1 className="title-md" style={{ marginTop: 0 }}>
             {project.title}
           </h1>
           <p className="body-text" style={{ fontSize: "1.2rem", marginTop: "1rem", maxWidth: "800px" }}>
